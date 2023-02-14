@@ -1,0 +1,30 @@
+version: "3.4"
+
+services:
+  es:
+    image: vmlellis/elasticsearch-marvel:2.3.4
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./config/elasticsearch/logging.yml:/usr/share/elasticsearch/config/logging.yml
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:9200/_cat/health"
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  kibana:
+    image: vmlellis/kibana-sense-marvel:4.5.1
+    ports:
+      - "5601:5601"
+    volumes:
+      - ./config/kibana/kibana.yml:/opt/kibana/config/kibana.yml
+    links:
+      - es:elasticsearch
